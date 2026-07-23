@@ -408,10 +408,12 @@ def generate_html_report(r: dict, chart_paths: dict, output_path: str):
             return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         return str(s)
 
-    # 构建卡片 HTML
+    # 构建卡片 HTML（按严重等级排序：critical > warning）
     anomaly_cards = ""
     level_colors = {"critical": "#D32F2F", "warning": "#F57C00"}
-    for a in r["anomalies"]:
+    level_order = {"critical": 0, "warning": 1}
+    sorted_anomalies = sorted(r["anomalies"], key=lambda x: level_order.get(x["level"], 99))
+    for a in sorted_anomalies:
         lc = level_colors.get(a["level"], "#888")
         anomaly_cards += f"""
         <div class="anomaly-card" style="border-left: 4px solid {lc};">
